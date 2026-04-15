@@ -24,8 +24,16 @@ FIELDS TO EXTRACT (If mentioned):
 - emisCompleted: Number of EMIs completed
 - clientName: Client's actual name ONLY
 - city: City name
+- cityArea: Area in the city
 - age: Age in years (number)
-- loanType: Specific loan product requirement
+- totalYearsInJob: Number of years in current/total job
+- loanType: Specific loan product requirement. MUST BE one of: [
+    'Personal loan', 'Business Loan', 'Home Loan', 'Plot purchase loan', 
+    'Plot + construction housing loan', 'Mortgage Loan', 'Loan Against property', 
+    'Commercial purchase loan', 'MSME Loan', 'Machinery loan', 'Project loan', 
+    'Construction finance', 'Inventory finance', 'Overdraft Loan', 
+    'Industrial purchase loan', 'Education Loan', 'Vehicle Loan', 'Gold Loan'
+  ]
 - loanAmount: Loan amount in rupees (number)
 - cibilScore: Credit score or history (Good, Average, Poor, Nil, Don’t know)
 - cibilIssueDetail: Explanation of CIBIL issues
@@ -79,7 +87,8 @@ FIELDS TO EXTRACT (If mentioned):
 RULES:
 1. Return ONLY valid JSON strings map.
 2. If a field is not mentioned do not include it.
-3. Extract boolean answers as boolean type, and amount answers as numbers.`;
+3. Extract boolean answers as boolean type, and amount answers as numbers.
+4. Normalize typos (e.g., "Home lone" -> "Home Loan").`;
 
         const cleanedEnquiry = currentEnquiry && typeof currentEnquiry.toObject === 'function' 
             ? currentEnquiry.toObject() 

@@ -241,8 +241,8 @@ async function upsertEnquiryFromMessage(phoneNumber, messageText) {
             console.error('AI Extraction Failed, falling back to regex:', aiError);
         }
 
-        // Check for specific intent first (new loan / cancel)
-        if (llmData.intent === 'new_loan' || llmData.intent === 'cancel') {
+        // Check for specific intent first (cancel ONLY - new_loan is now part of data flow)
+        if (llmData.intent === 'cancel') {
             await resetEnquiry(phoneNumber);
             const newEnquiry = await getOrCreateEnquiry(phoneNumber);
             return { enquiry: newEnquiry, parsedData: {}, isReset: true };
@@ -255,21 +255,27 @@ async function upsertEnquiryFromMessage(phoneNumber, messageText) {
         if (enquiry.status === 'in_progress' && enquiry.callbackRequested) {
             const newLoanType = parsedData.loanType || llmData.loanType;
             if (newLoanType) {
-                console.log(`🚀 New loan type detected (${newLoanType}) in existing enquiry. Auto-resetting for new loan.`);
-                await resetEnquiry(phoneNumber);
-                const freshEnquiry = await getOrCreateEnquiry(phoneNumber);
-                applyParsedData(freshEnquiry, parsedData);
+                // Determine if we should actually reset
+                const isDifferentType = enquiry.loanType && newLoanType.toLowerCase() !== enquiry.loanType.toLowerCase();
+                const isAlreadyCompleted = enquiry.conversationStage === 'completed' || enquiry.conversationStage === 'review';
+                
+                if (isDifferentType || isAlreadyCompleted) {
+                    console.log(`🚀 New loan type detected (${newLoanType}) for an ${isAlreadyCompleted ? 'already completed' : 'existing'} enquiry. Auto-resetting for new loan.`);
+                    await resetEnquiry(phoneNumber);
+                    const freshEnquiry = await getOrCreateEnquiry(phoneNumber);
+                    applyParsedData(freshEnquiry, parsedData);
 
-                freshEnquiry.status = 'in_progress';
-                freshEnquiry.conversationStage = hasAllPrimaryFields(freshEnquiry) ? 'review' : 'loan_type';
-                await freshEnquiry.save();
+                    freshEnquiry.status = 'in_progress';
+                    freshEnquiry.conversationStage = hasAllPrimaryFields(freshEnquiry) ? 'review' : 'loan_type';
+                    await freshEnquiry.save();
 
-                return {
-                    enquiry: freshEnquiry,
-                    parsedData,
-                    isReset: true,
-                    isSmartReset: true
-                };
+                    return {
+                        enquiry: freshEnquiry,
+                        parsedData,
+                        isReset: true,
+                        isSmartReset: true
+                    };
+                }
             }
         }
 
