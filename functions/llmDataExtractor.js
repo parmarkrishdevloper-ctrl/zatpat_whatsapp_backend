@@ -27,42 +27,37 @@ FIELDS TO EXTRACT (If mentioned):
 - cityArea: Area in the city
 - age: Age in years (number)
 - totalYearsInJob: Number of years in current/total job
-- loanType: Specific loan product requirement. MUST BE one of: [
-    'Personal loan', 'Business Loan', 'Home Loan', 'Plot purchase loan', 
-    'Plot + construction housing loan', 'Mortgage Loan', 'Loan Against property', 
-    'Commercial purchase loan', 'MSME Loan', 'Machinery loan', 'Project loan', 
-    'Construction finance', 'Inventory finance', 'Overdraft Loan', 
-    'Industrial purchase loan', 'Education Loan', 'Vehicle Loan', 'Gold Loan'
-  ]
+- loanType: Specific loan product requirement (e.g., Home Loan, Personal Loan, etc.)
+
 - loanAmount: Loan amount in rupees (number)
 - cibilScore: Credit score or history (Good, Average, Poor, Nil, Don’t know)
 - cibilIssueDetail: Explanation of CIBIL issues
-- profession: (Salaried, Businessman, Profession)
+- profession: The user's job or business status (e.g., Salaried, Businessman, Teacher, Doctor, etc.)
 - companyName: Name of the company they work for (Salaried)
 - netSalary: Net salary amount (Salaried)
 - grossSalary: Gross salary amount (Salaried)
-- salaryMode: (bank, cash)
+- salaryMode: (bank, cash, etc.)
 - existingEmiAmount: Amount of existing EMI
 - otherIncomeDetail: Any other income mentioned
 - coApplicantIncomeDetail: Any co-applicant income mentioned
-- companyType: (Proprietor, Partnership, Pvt Ltd, LLP, Individual, Freelancer)
-- businessType: (Manufacturing, Trading, Service, Other)
+- companyType: (Proprietor, Partnership, Pvt Ltd, etc.)
+- businessType: (Manufacturing, Trading, Service, etc.)
 - businessVintageYears: Age of the business
 - monthlyAnnualIncome: Income for self employed/business
 - itrYears: Number of years IT returns filed
 - hasGstNumber: (true/false)
 - hasCurrentAccount: (true/false)
-- professionalType: (Doctor, lawyer, CA, Architect)
+- professionalType: (Doctor, lawyer, Teacher, CA, etc.)
 - propertyFinalized: (true/false)
-- propertyType: (Under construction, Ready possession builder, Resale)
+- propertyType: (Under construction, Ready possession, Resale, etc.)
 - propertyValue: Property value amount
 - saleDeedAmount: Sale deed value
 - timeToFinalizeProperty: Time constraint for property
 - preSanctionRequired: (true/false)
 - loanPurpose: Purpose of the loan
-- propertyNature: (residential, commercial, Industrial, Plot, Other)
+- propertyNature: (residential, commercial, Industrial, Plot, etc.)
 - isSelfOccupied: (true/false)
-- propertyOwnership: (own name, joint ownership)
+- propertyOwnership: (own name, joint, etc.)
 - currentBank: Existing bank for balance transfer
 - currentInterestRate: Existing interest rate
 - loanStartDate: Start date of current loan

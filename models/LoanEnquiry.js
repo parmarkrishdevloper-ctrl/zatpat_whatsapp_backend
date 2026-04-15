@@ -23,21 +23,6 @@ const loanEnquirySchema = new mongoose.Schema({
     // Core Loan Details
     loanType: {
         type: String,
-        // Covering all product types
-        enum: [
-            'Personal loan', 'Business Loan', 'Home Loan', 'Plot purchase loan', 
-            'Plot + construction housing loan', 'Mortgage Loan', 'Loan Against property', 
-            'Home loan Balance Transfer', 'Home loan balance transfer and top up', 
-            'Commercial purchase loan', 'Mortgage loan balance transfer', 
-            'Mortgage loan balance transfer and top up', 'Loan against property balance transfer', 
-            'Loan Against property balance transfer and top up', 'LAP', 'MSME Loan', 
-            'CGTSME Loan', 'Machinery loan', 'Project loan', 'Construction finance', 
-            'Inventory finance', 'DOD', 'Drop line overdraft', 'OD', 'Overdraft Loan', 
-            'Home loan OD', 'Industrial purchase loan', 'Industrial mortgage loan', 
-            'Commercial plot purchase loan', 'Industrial plot purchase loan', 'other',
-            'Education Loan', 'education', 'Vehicle Loan', 'vehicle', 'Gold Loan', 'gold',
-            'personal', 'home', 'business'
-        ],
         default: null
     },
     loanAmount: { type: Number, default: null },
@@ -47,7 +32,6 @@ const loanEnquirySchema = new mongoose.Schema({
     // Profession
     profession: {
         type: String,
-        enum: ['Salaried', 'Self employed', 'Self employed professional', 'Businessmen'],
         default: null
     },
 
@@ -55,15 +39,15 @@ const loanEnquirySchema = new mongoose.Schema({
     companyName: { type: String, default: null },
     netSalary: { type: Number, default: null },
     grossSalary: { type: Number, default: null },
-    salaryMode: { type: String, enum: ['bank', 'cash'], default: null },
+    salaryMode: { type: String, default: null },
     existingEmiAmount: { type: Number, default: null },
     otherIncomeDetail: { type: String, default: null },
     coApplicantIncomeDetail: { type: String, default: null },
     workExperienceYears: { type: Number, default: null },
 
     // Self Employed & Businessmen Specific Fields
-    companyType: { type: String, enum: ['Proprietor', 'Partnership', 'Pvt Ltd', 'LLP', 'Individual', 'Freelancer'], default: null },
-    businessType: { type: String, enum: ['Manufacturing', 'Trading', 'Service', 'Other'], default: null },
+    companyType: { type: String, default: null },
+    businessType: { type: String, default: null },
     businessVintageYears: { type: Number, default: null },
     monthlyAnnualIncome: { type: Number, default: null },
     itrYears: { type: Number, default: null },
@@ -71,11 +55,11 @@ const loanEnquirySchema = new mongoose.Schema({
     hasCurrentAccount: { type: Boolean, default: null },
     
     // Self Employed Professional Specific
-    professionalType: { type: String, enum: ['Doctor', 'lawyer', 'CA', 'Architect'], default: null },
+    professionalType: { type: String, default: null },
     
     // Home/Housing Loan fields
     propertyFinalized: { type: Boolean, default: null },
-    propertyType: { type: String, enum: ['Under construction', 'Ready possession', 'Resale'], default: null },
+    propertyType: { type: String, default: null },
     propertyValue: { type: Number, default: null },
     saleDeedAmount: { type: Number, default: null },
     timeToFinalizeProperty: { type: String, default: null },
@@ -83,9 +67,9 @@ const loanEnquirySchema = new mongoose.Schema({
     
     // Property/Mortgage fields
     loanPurpose: { type: String, default: null },
-    propertyNature: { type: String, enum: ['residential', 'commercial', 'Industrial', 'Plot', 'Other'], default: null },
+    propertyNature: { type: String, default: null },
     isSelfOccupied: { type: Boolean, default: null },
-    propertyOwnership: { type: String, enum: ['own name', 'joint ownership'], default: null },
+    propertyOwnership: { type: String, default: null },
     
     // Balance Transfer Fields
     currentBank: { type: String, default: null },
@@ -103,7 +87,7 @@ const loanEnquirySchema = new mongoose.Schema({
     isMsmeRegistered: { type: Boolean, default: null },
     businessTurnover: { type: Number, default: null },
     businessNetProfit: { type: Number, default: null },
-    loanSecurityType: { type: String, enum: ['unsecured', 'secured'], default: null },
+    loanSecurityType: { type: String, default: null },
     offeredSecurity: { type: String, default: null },
     
     // General Preferences
