@@ -36,30 +36,46 @@ async function saveContact(phoneNumber) {
  */
 async function saveConversation(phoneNumber, userMessage, aiResponse, inputTokens = 0, outputTokens = 0) {
     try {
-        // Create new conversation
-        const conversation = new Conversation({
-            phoneNumber,
-            messages: [
-                {
-                    role: 'user',
-                    content: userMessage,
-                    timestamp: new Date(),
-                    inputTokens: inputTokens
-                },
-                {
-                    role: 'assistant',
-                    content: aiResponse,
-                    timestamp: new Date(),
-                    outputTokens: outputTokens
-                }
-            ],
-            totalInputTokens: inputTokens,
-            totalOutputTokens: outputTokens,
-            startedAt: new Date(),
-            lastMessageAt: new Date()
-        });
+        const threshold = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+        let conversation = await Conversation.findOne({ 
+            phoneNumber, 
+            updatedAt: { $gte: threshold } 
+        }).sort({ updatedAt: -1 });
 
-        await conversation.save();
+        const newMessages = [
+            {
+                role: 'user',
+                content: userMessage,
+                timestamp: new Date(),
+                inputTokens: inputTokens
+            },
+            {
+                role: 'assistant',
+                content: aiResponse,
+                timestamp: new Date(),
+                outputTokens: outputTokens
+            }
+        ];
+
+        if (conversation) {
+            // Append to existing conversation
+            conversation.messages.push(...newMessages);
+            conversation.totalInputTokens += inputTokens;
+            conversation.totalOutputTokens += outputTokens;
+            conversation.lastMessageAt = new Date();
+            await conversation.save();
+        } else {
+            // Create new conversation
+            conversation = new Conversation({
+                phoneNumber,
+                messages: newMessages,
+                totalInputTokens: inputTokens,
+                totalOutputTokens: outputTokens,
+                startedAt: new Date(),
+                lastMessageAt: new Date()
+            });
+            await conversation.save();
+        }
 
         // Update contact token counts
         await Contact.findOneAndUpdate(

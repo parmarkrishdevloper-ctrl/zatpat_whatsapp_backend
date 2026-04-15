@@ -99,7 +99,7 @@ app.post("/webhook", async (req, res) => {
       const Conversation = require("./models/Conversation");
       const recentConversation = await Conversation.findOne({ phoneNumber: from }).sort({ createdAt: -1 });
       if (recentConversation?.messages?.length) {
-        conversationHistory = recentConversation.messages.slice(-5).map((msg) => ({
+        conversationHistory = recentConversation.messages.slice(-15).map((msg) => ({
           role: msg.role,
           content: msg.content
         }));
