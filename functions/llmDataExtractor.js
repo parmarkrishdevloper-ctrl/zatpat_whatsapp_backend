@@ -83,7 +83,12 @@ RULES:
 1. Return ONLY valid JSON strings map.
 2. If a field is not mentioned do not include it.
 3. Extract boolean answers as boolean type, and amount answers as numbers.
-4. Normalize typos (e.g., "Home lone" -> "Home Loan").`;
+4. Normalize typos (e.g., "Home lone" -> "Home Loan").
+5. CRITICAL: For loan amounts, accurately convert words to numbers.
+   - "5 lac", "5 lakh", "5 lack", "5 L" = 500000
+   - "20 lac", "20 lakh", "20 L" = 2000000
+   - Handle typos like "lack", "lakhs", "lak", "lac" and convert them to full numeric values (e.g., 500000) for the loanAmount field.
+6. Return ONLY the JSON object.`;
 
         const cleanedEnquiry = currentEnquiry && typeof currentEnquiry.toObject === 'function' 
             ? currentEnquiry.toObject() 

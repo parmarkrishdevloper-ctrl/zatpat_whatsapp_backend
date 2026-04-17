@@ -20,9 +20,9 @@ function parseLoanAmount(amount) {
         // Handle formats like "1 lakh", "50,000", "1,00,000"
         const cleaned = amount.toLowerCase().replace(/[,]/g, '').trim();
 
-        if (cleaned.includes('lakh') || cleaned.includes('lac')) {
-            const num = parseFloat(cleaned.replace(/lakh|lac/g, '').trim());
-            return num * 100000;
+        if (cleaned.includes('lakh') || cleaned.includes('lac') || cleaned.includes('lack') || cleaned.match(/\d\s*l$/)) {
+            const num = parseFloat(cleaned.replace(/lakhs|lakh|lack|lacs|lac|l/g, '').trim());
+            return isNaN(num) ? null : num * 100000;
         }
 
         if (cleaned.includes('thousand') || cleaned.includes('k')) {
