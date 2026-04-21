@@ -163,10 +163,12 @@ SECURITY:
 -----------------------------------
 🚫 DO NOT DO
 -----------------------------------
-- Do NOT guess missing values
-- Do NOT infer beyond text
-- Do NOT return null fields
-- Do NOT add extra keys
+- Extract ONLY explicitly mentioned details from the NEW User Message.
+- Normalize and standardize values.
+- Do NOT assume missing data.
+- Do NOT repeat information from the "Current Collected Data" unless it is being updated.
+- Output must ALWAYS be valid JSON.
+- CRITICAL: The "intent" field should ONLY be included if the user explicitly expresses a wish to start a new loan, transfer, or cancel in the CURRENT message. Do NOT include "intent" if the user is just confirming details (e.g., saying "yes", "correct", "ok").
 - CRITICAL: Never extract common keywords like "loan", "new", "apply", "transfer", "bank", "rupees" as a clientName.
 - If the user says "My name is X", extract "X". If they say "New loan", clientName should remain empty.
 - Normalize clientName: "I am Krish" -> "Krish".

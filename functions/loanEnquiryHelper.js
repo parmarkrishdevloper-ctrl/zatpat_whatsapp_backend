@@ -247,7 +247,7 @@ async function upsertEnquiryFromMessage(phoneNumber, messageText) {
         }
 
         // Check for specific intent first (cancel or new_loan trigger reset)
-        if (llmData.intent === 'cancel' || llmData.intent === 'new_loan') {
+        if (llmData.intent === 'cancel' || (llmData.intent === 'new_loan' && /new|apply|start|another|again|reset/i.test(messageText))) {
             const isSmartResult = llmData.intent === 'new_loan';
             console.log(`🔄 [RESET] User requested ${llmData.intent}. Resetting enquiry.`);
             await resetEnquiry(phoneNumber);

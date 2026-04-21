@@ -117,7 +117,8 @@ app.post("/webhook", async (req, res) => {
 
       // If it was a SMART reset (we already captured new data like "Personal loan"), customize the message
       if (upsertResult.isSmartReset && enquiry.loanType) {
-        resetMsg = `Great! I've noted you're applying for a ${enquiry.loanType} loan. How much loan amount are you looking for?`;
+        const loanTypeDisplay = enquiry.loanType.toLowerCase().includes('loan') ? enquiry.loanType : `${enquiry.loanType} loan`;
+        resetMsg = `Great! I've noted you're applying for a ${loanTypeDisplay}. How much loan amount are you looking for?`;
       }
 
       await sendWhatsAppMessage(from, resetMsg, WHATSAPP_TOKEN, PHONE_NUMBER_ID);
