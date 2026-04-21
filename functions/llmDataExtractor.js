@@ -167,6 +167,9 @@ SECURITY:
 - Do NOT infer beyond text
 - Do NOT return null fields
 - Do NOT add extra keys
+- CRITICAL: Never extract common keywords like "loan", "new", "apply", "transfer", "bank", "rupees" as a clientName.
+- If the user says "My name is X", extract "X". If they say "New loan", clientName should remain empty.
+- Normalize clientName: "I am Krish" -> "Krish".
 `;
 
         const cleanedEnquiry = currentEnquiry && typeof currentEnquiry.toObject === 'function' 

@@ -42,8 +42,13 @@ function validateName(value) {
     if (typeof value === 'string') {
         const lower = value.toLowerCase().trim();
         if (lower === 'null' || lower === 'undefined' || lower === 'none' || lower === 'n/a') return null;
-        let name = value.trim().replace(/\d+/g, '').replace(/[₹$,]/g, '').replace(/lakh|lac|thousand|k|crore/gi, '').replace(/\s+/g, ' ').trim();
-        if (name.length > 0 && name.match(/[a-zA-Z]/)) {
+        let name = value.trim()
+            .replace(/\d+/g, '')
+            .replace(/[₹$,]/g, '')
+            .replace(/lakh|lac|thousand|k|crore|loan|new|apply|want|this|that|please/gi, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        if (name.length > 2 && name.match(/[a-zA-Z]/)) {
             return name;
         }
         return null;
@@ -241,11 +246,25 @@ async function upsertEnquiryFromMessage(phoneNumber, messageText) {
             console.error('AI Extraction Failed, falling back to regex:', aiError);
         }
 
-        // Check for specific intent first (cancel ONLY - new_loan is now part of data flow)
-        if (llmData.intent === 'cancel') {
+        // Check for specific intent first (cancel or new_loan trigger reset)
+        if (llmData.intent === 'cancel' || llmData.intent === 'new_loan') {
+            const isSmartResult = llmData.intent === 'new_loan';
+            console.log(`🔄 [RESET] User requested ${llmData.intent}. Resetting enquiry.`);
             await resetEnquiry(phoneNumber);
             const newEnquiry = await getOrCreateEnquiry(phoneNumber);
-            return { enquiry: newEnquiry, parsedData: {}, isReset: true };
+            
+            // If they said "new loan" and provided some data (like loan type) in the same message, keep that data
+            if (isSmartResult) {
+                applyParsedData(newEnquiry, llmData);
+                await newEnquiry.save();
+            }
+
+            return { 
+                enquiry: newEnquiry, 
+                parsedData: isSmartResult ? llmData : {}, 
+                isReset: true,
+                isSmartReset: isSmartResult && !!llmData.loanType
+            };
         }
 
         // Merge data: AI data takes precedence
