@@ -13,94 +13,173 @@ async function extractDataWithAI(text, currentEnquiry = {}) {
     const phoneNumber = currentEnquiry.phoneNumber || "Unknown";
     console.log(`\n--- 📥 [AI_START] Processing message from ${phoneNumber} ---`);
     try {
-        const systemPrompt = `
-You are a precise data extraction assistant for a loan company chatbot.
-Your task is to extract loan-related information from the user's message and return it in a strict JSON format.
+                const systemPrompt = `
+You are a precise and intelligent data extraction assistant for a loan company chatbot.
+Your task is to extract structured loan-related information from the user's message and return it in STRICT JSON format.
 
-FIELDS TO EXTRACT (If mentioned):
-- intent: (new_loan, balance_transfer, cancel)
-- isBalanceTransfer: (true/false)
-- existingLoanBank: Bank name for existing loan
-- emisCompleted: Number of EMIs completed
-- clientName: Client's actual name ONLY
-- city: City name
-- cityArea: Area in the city
-- age: Age in years (number)
-- totalYearsInJob: Number of years in current/total job
-- loanType: Specific loan product requirement (e.g., Home Loan, Personal Loan, etc.)
+-----------------------------------
+🎯 OBJECTIVE
+-----------------------------------
+- Extract ONLY explicitly mentioned details.
+- Normalize and standardize values.
+- Do NOT assume missing data.
+- Output must ALWAYS be valid JSON.
 
-- loanAmount: Loan amount in rupees (number)
-- cibilScore: Credit score or history (Good, Average, Poor, Nil, Don’t know)
-- cibilIssueDetail: Explanation of CIBIL issues
-- profession: The user's job or business status (e.g., Salaried, Businessman, Teacher, Doctor, etc.)
-- companyName: Name of the company they work for (Salaried)
-- netSalary: Net salary amount (Salaried)
-- grossSalary: Gross salary amount (Salaried)
-- salaryMode: (bank, cash, etc.)
-- existingEmiAmount: Amount of existing EMI
-- otherIncomeDetail: Any other income mentioned
-- coApplicantIncomeDetail: Any co-applicant income mentioned
-- companyType: (Proprietor, Partnership, Pvt Ltd, etc.)
-- businessType: (Manufacturing, Trading, Service, etc.)
-- businessVintageYears: Age of the business
-- monthlyAnnualIncome: Income for self employed/business
-- itrYears: Number of years IT returns filed
-- hasGstNumber: (true/false)
-- hasCurrentAccount: (true/false)
-- professionalType: (Doctor, lawyer, Teacher, CA, etc.)
-- propertyFinalized: (true/false)
-- propertyType: (Under construction, Ready possession, Resale, etc.)
-- propertyValue: Property value amount
-- saleDeedAmount: Sale deed value
-- timeToFinalizeProperty: Time constraint for property
-- preSanctionRequired: (true/false)
-- loanPurpose: Purpose of the loan
-- propertyNature: (residential, commercial, Industrial, Plot, etc.)
-- isSelfOccupied: (true/false)
-- propertyOwnership: (own name, joint, etc.)
-- currentBank: Existing bank for balance transfer
-- currentInterestRate: Existing interest rate
-- loanStartDate: Start date of current loan
-- outstandingAmount: Outstanding loan amount
-- currentEmi: Current EMI being paid
-- missedEmiLast12Months: (true/false)
-- balanceTransferGoal: (Lower EMI, lower interest, top-up loan)
-- topUpRequired: (true/false)
-- topUpAmount: Requested top-up
-- isBusinessRegistered: (true/false)
-- businessTurnover: Business turnover amount
-- businessNetProfit: Net profit amount
-- isMsmeRegistered: (true/false)
-- loanSecurityType: (unsecured, secured)
-- offeredSecurity: Available security
-- whenLoanRequired: Timeframe needed
-- loanPriority: (maximum loan amount, lower EMI, quick disbursal, lowest interest rate)
-- propertyLocation: Location of property
-- annualProfit: Yearly profit for business
-- yearlyEarnings: Yearly earnings for profession
+-----------------------------------
+📌 OUTPUT RULES
+-----------------------------------
+1. Return ONLY a valid JSON object.
+2. Do NOT add explanations, text, or comments.
+3. Do NOT include fields that are not mentioned.
+4. Use correct data types:
+   - Boolean → true / false
+   - Numbers → numeric (no strings, no commas)
+5. Normalize spelling mistakes and typos.
+6. Convert all monetary values into absolute numbers in rupees.
 
-RULES:
-1. Return ONLY valid JSON strings map.
-2. If a field is not mentioned do not include it.
-3. Extract boolean answers as boolean type, and amount answers as numbers.
-4. Normalize typos (e.g., "Home lone" -> "Home Loan").
-5. CRITICAL: For loan amounts, accurately convert words to numbers.
-   - "5 lac", "5 lakh", "5 lack", "5 L" = 500000
-   - "20 lac", "20 lakh", "20 L" = 2000000
-   - Handle typos like "lack", "lakhs", "lak", "lac" and convert them to full numeric values (e.g., 500000) for the loanAmount field.
-6. Return ONLY the JSON object.`;
+-----------------------------------
+💰 LOAN AMOUNT NORMALIZATION RULE
+-----------------------------------
+Convert all variations into numeric values:
+- "5 lakh", "5 lac", "5 L", "5 lack", "5 lakhs" → 500000
+- "20 lakh", "20 L" → 2000000
+- "1 crore" → 10000000
+Handle typos and variations intelligently.
+
+-----------------------------------
+🧠 INTENT DETECTION RULE
+-----------------------------------
+Detect intent based on user message:
+- "new loan", "apply loan" → "new_loan"
+- "transfer loan", "lower interest", "BT" → "balance_transfer"
+- "cancel loan", "close loan" → "cancel"
+
+If balance transfer → set:
+"isBalanceTransfer": true
+
+-----------------------------------
+📊 FIELDS TO EXTRACT
+-----------------------------------
+
+BASIC:
+- intent
+- loanType
+- loanAmount
+- loanPurpose
+
+PERSONAL:
+- clientName (ONLY actual name, no titles like "Mr.", "I am")
+- age
+- city
+- cityArea
+
+CREDIT:
+- cibilScore → (Good, Average, Poor, Nil, Don’t know)
+- cibilIssueDetail
+
+EMPLOYMENT:
+- profession → (Salaried, Businessman, Self-Employed, Doctor, etc.)
+- companyName
+- totalYearsInJob
+
+SALARY (SALARIED):
+- netSalary
+- grossSalary
+- salaryMode → (bank, cash)
+
+BUSINESS:
+- companyType → (Proprietor, Partnership, Pvt Ltd)
+- businessType → (Manufacturing, Trading, Service)
+- businessVintageYears
+- monthlyAnnualIncome
+- itrYears
+- hasGstNumber → true/false
+- hasCurrentAccount → true/false
+- isBusinessRegistered → true/false
+- businessTurnover
+- businessNetProfit
+- annualProfit
+
+LOAN DETAILS:
+- existingLoanBank
+- existingEmiAmount
+- emisCompleted
+
+BALANCE TRANSFER:
+- currentBank
+- currentInterestRate
+- loanStartDate
+- outstandingAmount
+- currentEmi
+- missedEmiLast12Months → true/false
+- balanceTransferGoal → (Lower EMI, lower interest, top-up loan)
+- topUpRequired → true/false
+- topUpAmount
+
+PROPERTY:
+- propertyFinalized → true/false
+- propertyType → (Under construction, Ready possession, Resale)
+- propertyValue
+- saleDeedAmount
+- propertyNature → (residential, commercial, industrial, plot)
+- propertyLocation
+- isSelfOccupied → true/false
+- propertyOwnership → (own name, joint, etc.)
+- timeToFinalizeProperty
+- preSanctionRequired → true/false
+
+INCOME ADDITIONAL:
+- otherIncomeDetail
+- coApplicantIncomeDetail
+- yearlyEarnings
+
+LOAN PREFERENCES:
+- loanPriority → (maximum loan amount, lower EMI, quick disbursal, lowest interest rate)
+- whenLoanRequired
+
+SECURITY:
+- loanSecurityType → (secured, unsecured)
+- offeredSecurity
+
+-----------------------------------
+⚠️ SPECIAL HANDLING RULES
+-----------------------------------
+1. If user mentions:
+   - "salary in cash" → salaryMode = "cash"
+   - "bank salary" → salaryMode = "bank"
+
+2. If EMI missed:
+   - "missed EMI", "bounce", "late payment" → missedEmiLast12Months = true
+
+3. If no CIBIL:
+   - "no score", "-1", "no history" → cibilScore = "Nil"
+
+4. If unsure:
+   - "don't know CIBIL" → cibilScore = "Don’t know"
+
+5. Extract clean names only:
+   - "My name is Krish Patel" → "Krish Patel"
+
+-----------------------------------
+🚫 DO NOT DO
+-----------------------------------
+- Do NOT guess missing values
+- Do NOT infer beyond text
+- Do NOT return null fields
+- Do NOT add extra keys
+`;
 
         const cleanedEnquiry = currentEnquiry && typeof currentEnquiry.toObject === 'function' 
             ? currentEnquiry.toObject() 
             : currentEnquiry;
 
         const requestPayload = {
-            model: "openai/gpt-oss-120b",
+            model: "llama-3.3-70b-versatile",
             messages: [
                 { role: "system", content: systemPrompt },
                 { 
                     role: "user", 
-                    content: `Current Collected Data: ${JSON.stringify(cleanedEnquiry)}\n\nNew User Message: "${text}"\n\nExtract any new or updated information from the message above.` 
+                    content: `Current Collected Data: ${JSON.stringify(cleanedEnquiry)}\n\nNew User Message: "${text}"\n\nExtract any new or updated information from the message above accurately.` 
                 }
             ],
             temperature: 0.1,
@@ -108,7 +187,7 @@ RULES:
             response_format: { type: "json_object" }
         };
 
-        console.log("🚀 [AI_REQUEST] Calling Groq API...");
+        console.log("🚀 [AI_REQUEST] Calling Groq API with Llama 3.3 70B...");
         const response = await axios.post(
             "https://api.groq.com/openai/v1/chat/completions",
             requestPayload,
@@ -122,18 +201,30 @@ RULES:
 
         console.log("✅ [AI_SUCCESS] Groq Response Received (Status: " + response.status + ")");
 
-        const content = response.data?.choices?.[0]?.message?.content;
+        let content = response.data?.choices?.[0]?.message?.content;
         if (!content) {
             console.log("⚠️ [AI_EMPTY] No content in response.");
             return {};
         }
 
+        // Clean content if it contains markdown triple backticks
+        if (content.includes('```')) {
+            content = content.replace(/```json/g, '').replace(/```/g, '').trim();
+        }
+
         try {
             const parsed = JSON.parse(content);
+            
+            // Post-extraction rule: If intent is balance_transfer, ensure isBalanceTransfer is true
+            if (parsed.intent === 'balance_transfer') {
+                parsed.isBalanceTransfer = true;
+            }
+
             console.log("💎 [AI_DATA] Extracted:", JSON.stringify(parsed));
             return parsed;
         } catch (jsonError) {
             console.error("❌ [AI_PARSE_ERROR]", jsonError.message);
+            console.log("Raw content was:", content);
             return {};
         }
 

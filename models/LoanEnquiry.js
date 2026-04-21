@@ -18,7 +18,7 @@ const loanEnquirySchema = new mongoose.Schema({
     annualProfit: { type: Number, default: null },
     yearlyEarnings: { type: Number, default: null },
     totalYearsInJob: { type: Number, default: null },
-    intent: { type: String, enum: ['new_loan', 'balance_transfer'], default: null },
+    intent: { type: String, default: null },
 
     // Core Loan Details
     loanType: {
@@ -97,7 +97,6 @@ const loanEnquirySchema = new mongoose.Schema({
     // Status & tags
     status: {
         type: String,
-        enum: ['new', 'in_progress', 'documents_pending', 'under_review', 'approved', 'rejected', 'disbursed'],
         default: 'new'
     },
     tags: [{ type: String }],
