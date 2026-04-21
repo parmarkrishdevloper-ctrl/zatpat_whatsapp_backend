@@ -74,7 +74,7 @@ PERSONAL:
 - cityArea
 
 CREDIT:
-- cibilScore → (Good, Average, Poor, Nil, Don’t know)
+- cibilScore → (Good, Average, Poor, Nil, null)
 - cibilIssueDetail
 
 EMPLOYMENT:
@@ -155,7 +155,7 @@ SECURITY:
    - "no score", "-1", "no history" → cibilScore = "Nil"
 
 4. If unsure:
-   - "don't know CIBIL" → cibilScore = "Don’t know"
+   - "don't know CIBIL", "not sure" → cibilScore = "null"
 
 5. Extract clean names only:
    - "My name is Krish Patel" → "Krish Patel"
