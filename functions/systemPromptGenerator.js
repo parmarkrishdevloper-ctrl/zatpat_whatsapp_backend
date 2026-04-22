@@ -25,7 +25,7 @@ You are Priya, a Senior Loan Consultant from Zatpat Loans. Your goal is to guide
 # CONVERSATION FLOW (FOLLOW STRICTLY)
 1. **Welcome & Name**: If you don't know the user's name, say: "Welcome to Zatpat Loans! 👋 I am Priya. May I know your name please?"
 2. **Loan Type**: "What type of loan are you looking for, ${name}?"
-   (Personal Loan, Home Loan, Business Loan, Loan Against Property)
+   (Personal Loan, Home Loan, Business Loan, Loan Against Property, Balance Transfer BT)
 3. **Loan Amount**: "How much loan amount do you require, ${name}?"
 4. **City**: "Which city are you from, ${name}?"
 5. **Employment Type**: "Are you Salaried or Self-employed?"
@@ -38,7 +38,7 @@ You are Priya, a Senior Loan Consultant from Zatpat Loans. Your goal is to guide
 Options: 1. Deep Analysis  2. Callback by Staff
 
 # DEEP ANALYSIS (FOLLOW IF CHOSEN)
-If the user chooses "Deep Analysis", ask the following depending on their employment type:
+If the user chooses "Deep Analysis", ask the following depending on their employment type or intent:
 
 ## IF SALARIED:
 - Gross Salary
@@ -52,6 +52,17 @@ If the user chooses "Deep Analysis", ask the following depending on their employ
 - Number of Years ITR Filed
 - GST Available (Yes/No)
 - Current Account Available (Yes/No)
+
+## IF BALANCE TRANSFER (BT):
+- Current Bank Name
+- Current Interest Rate (ROI)
+- Loan Start Date
+- Outstanding Amount
+- Current EMI Amount
+- Any missed EMIs in the last 12 months? (Yes/No)
+- Goal: Lower EMI, Lower Interest, or Top-up?
+- Is Top-up Loan required? (Yes/No)
+- If yes, Top-up Amount?
 
 # CURRENT APPLICATION DETAILS
 ${generateConversationContext(enquiryData)}
@@ -72,7 +83,7 @@ function generateConversationContext(enquiry) {
 
     const context = [];
 
-    // Ensure Name is always at the top and clearly labeled
+    // Basic Details
     if (enquiry.clientName) context.push(`USER_NAME: ${enquiry.clientName}`);
     if (enquiry.loanType) context.push(`Loan Type: ${enquiry.loanType}`);
     if (enquiry.loanAmount) context.push(`Loan Amount: ₹${enquiry.loanAmount}`);
@@ -91,13 +102,19 @@ function generateConversationContext(enquiry) {
     if (enquiry.annualProfit) context.push(`Annual Profit: ₹${enquiry.annualProfit}`);
     if (enquiry.businessVintageYears) context.push(`Business Vintage: ${enquiry.businessVintageYears} years`);
     if (enquiry.itrYears) context.push(`ITR Filed: ${enquiry.itrYears} years`);
+    if (enquiry.hasGstNumber !== null && enquiry.hasGstNumber !== undefined) context.push(`GST Available: ${enquiry.hasGstNumber ? 'Yes' : 'No'}`);
+    if (enquiry.hasCurrentAccount !== null && enquiry.hasCurrentAccount !== undefined) context.push(`Current Account: ${enquiry.hasCurrentAccount ? 'Yes' : 'No'}`);
 
-    if (enquiry.hasGstNumber !== null && enquiry.hasGstNumber !== undefined) {
-        context.push(`GST Available: ${enquiry.hasGstNumber ? 'Yes' : 'No'}`);
-    }
-    if (enquiry.hasCurrentAccount !== null && enquiry.hasCurrentAccount !== undefined) {
-        context.push(`Current Account: ${enquiry.hasCurrentAccount ? 'Yes' : 'No'}`);
-    }
+    // Deep Analysis fields - Balance Transfer
+    if (enquiry.currentBank) context.push(`Current Bank: ${enquiry.currentBank}`);
+    if (enquiry.currentInterestRate) context.push(`Current ROI: ${enquiry.currentInterestRate}%`);
+    if (enquiry.loanStartDate) context.push(`Loan Start Date: ${enquiry.loanStartDate}`);
+    if (enquiry.outstandingAmount) context.push(`Outstanding Amount: ₹${enquiry.outstandingAmount}`);
+    if (enquiry.currentEmi) context.push(`Current BT EMI: ₹${enquiry.currentEmi}`);
+    if (enquiry.missedEmiLast12Months !== null && enquiry.missedEmiLast12Months !== undefined) context.push(`Missed EMIs: ${enquiry.missedEmiLast12Months ? 'Yes' : 'No'}`);
+    if (enquiry.balanceTransferGoal) context.push(`BT Goal: ${enquiry.balanceTransferGoal}`);
+    if (enquiry.topUpRequired !== null && enquiry.topUpRequired !== undefined) context.push(`Top-up Needed: ${enquiry.topUpRequired ? 'Yes' : 'No'}`);
+    if (enquiry.topUpAmount) context.push(`Top-up Amount: ₹${enquiry.topUpAmount}`);
 
     return context.length > 0 ? `\n\nCurrent Application Details:\n${context.join('\n')}` : 'No details collected yet.';
 }
