@@ -156,7 +156,7 @@ SECURITY:
    - "no score", "-1", "no history" → cibilScore = "Nil"
 
 4. If unsure:
-   - "don't know CIBIL", "not sure" → cibilScore = "null"
+   - "don't know CIBIL", "not sure" → cibilScore = null
 
 5. Extract clean names only:
    - "My name is Krish Patel" → "Krish Patel"
@@ -170,9 +170,10 @@ SECURITY:
 - Do NOT repeat information from the "Current Collected Data" unless it is being updated.
 - Output must ALWAYS be valid JSON.
 - CRITICAL: The "intent" field should ONLY be included if the user explicitly expresses a wish to start a new loan, transfer, or cancel in the CURRENT message. Do NOT include "intent" if the user is just confirming details (e.g., saying "yes", "correct", "ok").
-- CRITICAL: Never extract common keywords like "loan", "new", "apply", "transfer", "bank", "rupees" as a clientName.
+- CRITICAL: Never extract common keywords like "loan", "new", "apply", "transfer", "bank", "rupees", city names (e.g., "Ahemdabad", "Surat"), or employment types (e.g., "Salaried", "Business") as a clientName.
 - If the user says "My name is X", extract "X". If they say "New loan", clientName should remain empty.
 - Normalize clientName: "I am Krish" -> "Krish".
+- If the user says "I don't know" or "not sure" for CIBIL score, set cibilScore: null (literal JSON null).
 `;
 
         const cleanedEnquiry = currentEnquiry && typeof currentEnquiry.toObject === 'function'
