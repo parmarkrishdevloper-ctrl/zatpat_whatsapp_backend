@@ -171,9 +171,7 @@ app.post("/webhook", async (req, res) => {
 
     if (upsertResult.hasAllPrimaryFields) {
       await updateEnquiryData(from, "review", {});
-      // Fix "Thank you null" -> Use valid name or generic fallback
-      const namePart = enquiry.clientName && enquiry.clientName !== 'null' ? ` ${enquiry.clientName}` : "";
-      const finalMessage = `Thank you${namePart}. Our loan specialist will call you back shortly.`;
+      const finalMessage = `🎉 Thank you!\nWe are checking the best loan options for you.\nOur expert will contact you shortly.\n\n👉 *Options:*\n1️⃣ Call me now\n2️⃣ Send details on WhatsApp`;
 
       try {
         await saveContact(from);
