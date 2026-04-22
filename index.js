@@ -12,7 +12,8 @@ const {
   upsertEnquiryFromMessage,
   createCallbackRequest,
   updateEnquiryData,
-  getEnquirySummary // Import summary helper
+  getEnquirySummary,
+  resetEnquiry // Import reset helper
 } = require("./functions/loanEnquiryHelper");
 const { generateSystemPrompt, generateConversationContext } = require("./functions/systemPromptGenerator");
 const { isUserDisinterested } = require("./functions/responseParser");
@@ -130,26 +131,17 @@ app.post("/webhook", async (req, res) => {
       return;
     }
 
-    // 2. Handle Greeting with Existing Completed Enquiry
+    // 2. Handle Greeting - AUTO RESET for new loan flow
     const isGreeting = /^(hi|hello|hey|greetings|namaste|hola)/i.test(userText.trim());
 
-    // STRICT CHECK: Only show "Welcome Back" if we actually have useful data (Loan type/Amount)
-    const hasUsefulData = enquiry.loanType || enquiry.loanAmount;
-
-    if (isGreeting && enquiry.status === 'in_progress' && enquiry.callbackRequested && hasUsefulData) {
-      const summary = getEnquirySummary(enquiry);
-      const welcomeBackMsg = `Welcome back! We have your previous loan application: ${summary}.\n\nDo you want to continue with this or apply for a *new loan*?`;
-
-      await sendWhatsAppMessage(from, welcomeBackMsg, WHATSAPP_TOKEN, PHONE_NUMBER_ID);
-      try {
-        await saveContact(from);
-        await saveConversation(from, userText, welcomeBackMsg, estimateTokens(userText), estimateTokens(welcomeBackMsg));
-      } catch (dbError) { console.error(dbError); }
-      return;
+    if (isGreeting && enquiry.status === 'in_progress' && enquiry.callbackRequested) {
+      console.log(`🔄 [AUTO-RESET] User sent greeting "${userText}". Resetting for new loan flow.`);
+      await resetEnquiry(from);
+      // After reset, we continue to the normal AI flow which will see the 'greeting' stage and ask for name/loan type
     }
 
     if (isUserDisinterested(userText, conversationHistory)) {
-      const goodbyeMessage = "No problem. Our loan specialist will reach out to you very soon. Thank you!";
+      const goodbyeMessage = "No problem. Our loan executive will reach out to you very soon. Thank you!";
       await createCallbackRequest(from, "ASAP");
 
       try {
@@ -171,7 +163,7 @@ app.post("/webhook", async (req, res) => {
 
     if (upsertResult.hasAllPrimaryFields) {
       await updateEnquiryData(from, "review", {});
-      const finalMessage = `🎉 Thank you!\nWe are checking the best loan options for you.\nOur expert will contact you shortly.\n\n👉 *Options:*\n1️⃣ Call me now\n2️⃣ Send details on WhatsApp`;
+      const finalMessage = `🎉 Thank you!\nWe are checking the best loan options for you.\nOur loan executive will contact you shortly.\n\n👉 *Options:*\n1️⃣ Call me now\n2️⃣ Send details on WhatsApp`;
 
       try {
         await saveContact(from);
@@ -265,7 +257,7 @@ app.get("/privacy-policy", (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 [ZATPAT_BOT] Version: 2.0.debug_v3`);
-    console.log(`🚀 [ZATPAT_BOT] Server running on port ${PORT}`);
-    console.log(`🚀 [ZATPAT_BOT] Last Deployment: ${new Date().toLocaleString()}`);
+  console.log(`🚀 [ZATPAT_BOT] Version: 2.0.debug_v3`);
+  console.log(`🚀 [ZATPAT_BOT] Server running on port ${PORT}`);
+  console.log(`🚀 [ZATPAT_BOT] Last Deployment: ${new Date().toLocaleString()}`);
 });
