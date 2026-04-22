@@ -13,7 +13,7 @@ async function extractDataWithAI(text, currentEnquiry = {}) {
     const phoneNumber = currentEnquiry.phoneNumber || "Unknown";
     console.log(`\n--- 📥 [AI_START] Processing message from ${phoneNumber} ---`);
     try {
-                const systemPrompt = `
+        const systemPrompt = `
 You are a precise and intelligent data extraction assistant for a loan company chatbot.
 Your task is to extract structured loan-related information from the user's message and return it in STRICT JSON format.
 
@@ -136,6 +136,7 @@ INCOME ADDITIONAL:
 LOAN PREFERENCES:
 - loanPriority → (maximum loan amount, lower EMI, quick disbursal, lowest interest rate)
 - whenLoanRequired
+- existingLoanDetails (details of current active loans)
 
 SECURITY:
 - loanSecurityType → (secured, unsecured)
@@ -174,17 +175,17 @@ SECURITY:
 - Normalize clientName: "I am Krish" -> "Krish".
 `;
 
-        const cleanedEnquiry = currentEnquiry && typeof currentEnquiry.toObject === 'function' 
-            ? currentEnquiry.toObject() 
+        const cleanedEnquiry = currentEnquiry && typeof currentEnquiry.toObject === 'function'
+            ? currentEnquiry.toObject()
             : currentEnquiry;
 
         const requestPayload = {
             model: "llama-3.3-70b-versatile",
             messages: [
                 { role: "system", content: systemPrompt },
-                { 
-                    role: "user", 
-                    content: `Current Collected Data: ${JSON.stringify(cleanedEnquiry)}\n\nNew User Message: "${text}"\n\nExtract any new or updated information from the message above accurately.` 
+                {
+                    role: "user",
+                    content: `Current Collected Data: ${JSON.stringify(cleanedEnquiry)}\n\nNew User Message: "${text}"\n\nExtract any new or updated information from the message above accurately.`
                 }
             ],
             temperature: 0.1,
@@ -219,7 +220,7 @@ SECURITY:
 
         try {
             const parsed = JSON.parse(content);
-            
+
             // Post-extraction rule: If intent is balance_transfer, ensure isBalanceTransfer is true
             if (parsed.intent === 'balance_transfer') {
                 parsed.isBalanceTransfer = true;
@@ -242,7 +243,7 @@ SECURITY:
         } else {
             console.error("👉 MESSAGE:", error.message);
         }
-        return {}; 
+        return {};
     }
 }
 

@@ -59,8 +59,8 @@ function validateName(value) {
 function applyParsedData(enquiry, data = {}) {
     // Basic Details
     if (data.clientName) enquiry.clientName = validateName(data.clientName);
-    else if (data.name) enquiry.clientName = validateName(data.name); 
-    
+    else if (data.name) enquiry.clientName = validateName(data.name);
+
     if (data.city) enquiry.city = validateData(data.city);
     if (data.cityArea) enquiry.cityArea = validateData(data.cityArea);
     if (data.age) enquiry.age = data.age;
@@ -139,6 +139,7 @@ function applyParsedData(enquiry, data = {}) {
     // Common legacy fallbacks
     if (data.email) enquiry.email = validateData(data.email);
     if (data.preferredCallbackTime) enquiry.preferredCallbackTime = validateData(data.preferredCallbackTime);
+    if (data.existingLoanDetails) enquiry.existingLoanDetails = validateData(data.existingLoanDetails);
 }
 
 function hasAnyCoreLoanData(enquiry) {
@@ -164,7 +165,7 @@ function hasAllPrimaryFields(enquiry) {
     if (!hasCore5) return false;
 
     // 2. Conditional Smart Questions
-    
+
     // If Home Loan -> Need Property Value
     const isHomeLoan = enquiry.loanType?.toLowerCase().includes('home');
     if (isHomeLoan && !enquiry.propertyValue) return false;
@@ -181,7 +182,7 @@ function hasAllPrimaryFields(enquiry) {
 
 function getMissingPrimaryFields(enquiry) {
     const missing = [];
-    
+
     // Core 5
     if (!enquiry.loanType) missing.push('loanType');
     if (!enquiry.loanAmount) missing.push('loanAmount');
@@ -250,16 +251,16 @@ async function upsertEnquiryFromMessage(phoneNumber, messageText) {
             console.log(`🔄 [RESET] User requested ${llmData.intent}. Resetting enquiry.`);
             await resetEnquiry(phoneNumber);
             const newEnquiry = await getOrCreateEnquiry(phoneNumber);
-            
+
             // If they said "new loan" and provided some data (like loan type) in the same message, keep that data
             if (isSmartResult) {
                 applyParsedData(newEnquiry, llmData);
                 await newEnquiry.save();
             }
 
-            return { 
-                enquiry: newEnquiry, 
-                parsedData: isSmartResult ? llmData : {}, 
+            return {
+                enquiry: newEnquiry,
+                parsedData: isSmartResult ? llmData : {},
                 isReset: true,
                 isSmartReset: isSmartResult && !!llmData.loanType
             };
@@ -275,7 +276,7 @@ async function upsertEnquiryFromMessage(phoneNumber, messageText) {
                 // Determine if we should actually reset
                 const isDifferentType = enquiry.loanType && newLoanType.toLowerCase() !== enquiry.loanType.toLowerCase();
                 const isAlreadyCompleted = enquiry.conversationStage === 'completed' || enquiry.conversationStage === 'review';
-                
+
                 if (isDifferentType || isAlreadyCompleted) {
                     console.log(`🚀 New loan type detected (${newLoanType}) for an ${isAlreadyCompleted ? 'already completed' : 'existing'} enquiry. Auto-resetting for new loan.`);
                     await resetEnquiry(phoneNumber);

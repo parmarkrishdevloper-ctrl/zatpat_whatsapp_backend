@@ -11,7 +11,7 @@ const loanEnquirySchema = new mongoose.Schema({
     city: { type: String, default: null },
     age: { type: Number, default: null },
     cityArea: { type: String, default: null },
-    
+
     // Additional fields for new requirement
     propertyLocation: { type: String, default: null },
     emisCompleted: { type: Number, default: null },
@@ -19,6 +19,7 @@ const loanEnquirySchema = new mongoose.Schema({
     yearlyEarnings: { type: Number, default: null },
     totalYearsInJob: { type: Number, default: null },
     intent: { type: String, default: null },
+    existingLoanDetails: { type: String, default: null },
 
     // Core Loan Details
     loanType: {
@@ -28,7 +29,7 @@ const loanEnquirySchema = new mongoose.Schema({
     loanAmount: { type: Number, default: null },
     cibilScore: { type: Number, default: null },
     cibilIssueDetail: { type: String, default: null },
-    
+
     // Profession
     profession: {
         type: String,
@@ -53,10 +54,10 @@ const loanEnquirySchema = new mongoose.Schema({
     itrYears: { type: Number, default: null },
     hasGstNumber: { type: Boolean, default: null },
     hasCurrentAccount: { type: Boolean, default: null },
-    
+
     // Self Employed Professional Specific
     professionalType: { type: String, default: null },
-    
+
     // Home/Housing Loan fields
     propertyFinalized: { type: Boolean, default: null },
     propertyType: { type: String, default: null },
@@ -64,13 +65,13 @@ const loanEnquirySchema = new mongoose.Schema({
     saleDeedAmount: { type: Number, default: null },
     timeToFinalizeProperty: { type: String, default: null },
     preSanctionRequired: { type: Boolean, default: null },
-    
+
     // Property/Mortgage fields
     loanPurpose: { type: String, default: null },
     propertyNature: { type: String, default: null },
     isSelfOccupied: { type: Boolean, default: null },
     propertyOwnership: { type: String, default: null },
-    
+
     // Balance Transfer Fields
     currentBank: { type: String, default: null },
     currentInterestRate: { type: Number, default: null },
@@ -81,7 +82,7 @@ const loanEnquirySchema = new mongoose.Schema({
     balanceTransferGoal: { type: String, default: null },
     topUpRequired: { type: Boolean, default: null },
     topUpAmount: { type: Number, default: null },
-    
+
     // Business / MSME Fields
     isBusinessRegistered: { type: Boolean, default: null },
     isMsmeRegistered: { type: Boolean, default: null },
@@ -89,7 +90,7 @@ const loanEnquirySchema = new mongoose.Schema({
     businessNetProfit: { type: Number, default: null },
     loanSecurityType: { type: String, default: null },
     offeredSecurity: { type: String, default: null },
-    
+
     // General Preferences
     whenLoanRequired: { type: String, default: null },
     loanPriority: { type: String, default: null },
@@ -100,12 +101,12 @@ const loanEnquirySchema = new mongoose.Schema({
         default: 'new'
     },
     tags: [{ type: String }],
-    
+
     // Conversation management
     conversationStage: { type: String, default: 'greeting' },
     callbackRequested: { type: Boolean, default: false },
     preferredCallbackTime: { type: String, default: null },
-    
+
     // Fallback data
     collectedData: {
         type: Map,
