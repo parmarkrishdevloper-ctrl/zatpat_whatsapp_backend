@@ -188,7 +188,12 @@ function hasAllPrimaryFields(enquiry) {
     if (!hasCoreBasic) return false;
 
     // 2. Conditional Basic Info
-    const isMortgageOrLap = enquiry.loanType?.toLowerCase().includes('mortgage') || enquiry.loanType?.toLowerCase().includes('property') || enquiry.loanType?.toLowerCase().includes('lap');
+    const loanTypeLower = enquiry.loanType?.toLowerCase() || "";
+    const isBT = enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer || loanTypeLower.includes('transfer') || loanTypeLower.includes('bt');
+    
+    // Property questions (Type & Value) ONLY for Mortgage/LAP if it's NOT a Balance Transfer
+    const isMortgageOrLap = (loanTypeLower.includes('mortgage') || loanTypeLower.includes('property') || loanTypeLower.includes('lap')) && !loanTypeLower.includes('home') && !isBT;
+    
     if (isMortgageOrLap && (!enquiry.propertyValue || !enquiry.propertyType)) return false;
 
     // 3. The Choice (Phase 2)
@@ -207,7 +212,8 @@ function hasAllPrimaryFields(enquiry) {
         }
 
         // Balance Transfer Specific
-        if (enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer) {
+        const isBT = enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer || loanTypeLower.includes('transfer') || loanTypeLower.includes('bt');
+        if (isBT) {
             if (!enquiry.currentBank || !enquiry.currentInterestRate || !enquiry.loanStartDate || !enquiry.outstandingAmount || !enquiry.currentEmi || enquiry.missedEmiLast12Months === null || !enquiry.balanceTransferGoal || enquiry.topUpRequired === null) return false;
             if (enquiry.topUpRequired && !enquiry.topUpAmount) return false;
         }
@@ -253,7 +259,8 @@ function getMissingPrimaryFields(enquiry) {
             if (enquiry.hasCurrentAccount === null) missing.push('hasCurrentAccount');
         }
 
-        if (enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer) {
+        const isBT = enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer || loanTypeLower.includes('transfer') || loanTypeLower.includes('bt');
+        if (isBT) {
             if (!enquiry.currentBank) missing.push('currentBank');
             if (!enquiry.currentInterestRate) missing.push('currentInterestRate');
             if (!enquiry.loanStartDate) missing.push('loanStartDate');

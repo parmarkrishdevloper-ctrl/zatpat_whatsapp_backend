@@ -51,10 +51,10 @@ Handle typos and variations intelligently.
 -----------------------------------
 Detect intent based on user message:
 - "new loan", "apply loan" → "new_loan"
-- "transfer loan", "lower interest", "BT" → "balance_transfer"
+- "transfer loan", "lower interest", "BT", "trsanfer", "trsafer", "balance transfer" → "balance_transfer"
 - "cancel loan", "close loan" → "cancel"
 
-If balance transfer → set:
+If balance transfer or "BT" is mentioned → set:
 "isBalanceTransfer": true
 
 -----------------------------------

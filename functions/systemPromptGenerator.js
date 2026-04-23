@@ -31,9 +31,10 @@ You are Priya, a Senior Loan Consultant from Zatpat Loans. Your goal is to guide
 
 ---
 ### PROPERTY QUESTIONS (MORTGAGE / LAP ONLY)
-**CRITICAL**: If the user chose **Mortgage Loan** or **Loan Against Property**, ask these 2 questions.
-**DO NOT ASK THESE FOR HOME LOAN, PERSONAL LOAN, OR BUSINESS LOAN.** 
-For Home Loan, move DIRECTLY to "Loan Amount".
+**CRITICAL**: ONLY ask these if the user chose **Mortgage Loan** or **Loan Against Property**.
+**DO NOT ASK THESE FOR: Home Loan, Balance Transfer (BT), Personal Loan, or Business Loan.**
+Even if the user says "Mortgage Balance Transfer", you MUST skip these questions.
+If "Home" or "Balance Transfer" or "BT" is mentioned in the Loan Type, move DIRECTLY to "Loan Amount".
 
 - "What type of property is it? (Residential, Commercial, or Plot?)"
 - "What is the approximate market value of the property?"
@@ -124,8 +125,9 @@ function generateConversationContext(enquiry, stage = "unknown") {
     if (enquiry.cibilScore) context.push(`CIBIL Score: ${enquiry.cibilScore}`);
     
     // BT Information Check
-    if (enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer) {
-        context.push(`IS_BALANCE_TRANSFER: Yes`);
+    const loanTypeLower = enquiry.loanType?.toLowerCase() || "";
+    if (enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer || loanTypeLower.includes('transfer') || loanTypeLower.includes('bt')) {
+        context.push(`IS_BALANCE_TRANSFER: YES (MANDATORY BT QUESTIONS APPLY)`);
     }
 
     // Deep Analysis fields - Salaried
