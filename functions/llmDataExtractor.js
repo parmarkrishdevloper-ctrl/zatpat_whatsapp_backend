@@ -171,7 +171,7 @@ SECURITY:
 - Do NOT repeat information from the "Current Collected Data" unless it is being updated.
 - Output must ALWAYS be valid JSON.
 - CRITICAL: The "intent" field should ONLY be included if the user explicitly expresses a wish to start a new loan, transfer, or cancel in the CURRENT message. Do NOT include "intent" if the user is just confirming details (e.g., saying "yes", "correct", "ok").
-- CRITICAL: Never extract common keywords like "loan", "new", "apply", "transfer", "bank", "rupees", city names (e.g., "Ahemdabad", "Surat"), or employment types (e.g., "Salaried", "Business") as a clientName.
+- CRITICAL: Never extract common keywords like "loan", "new", "apply", "transfer", "bank", "rupees", "Home", "Mortgage", "Property", "Lap", "BT", city names (e.g., "Ahemdabad", "Surat"), or employment types (e.g., "Salaried", "Business") as a clientName.
 - Normalize clientName: "I am Krish" -> "Krish".
 - If the user says "My name is X", extract "X". If they say "New loan", clientName should remain empty.
 - Normalize analysisPreference: "call me", "staff", "executive" -> "callback". "deep", "analysis", "check eligibility" -> "deep_analysis".

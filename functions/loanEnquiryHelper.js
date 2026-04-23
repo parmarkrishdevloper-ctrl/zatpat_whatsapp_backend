@@ -550,6 +550,8 @@ async function resetEnquiry(phoneNumber) {
         enquiry.loanTenure = null;
         enquiry.loanPurpose = null;
         enquiry.employmentType = null;
+        enquiry.profession = null;
+        enquiry.clientName = null;
         enquiry.monthlyIncome = null;
         enquiry.companyName = null;
         enquiry.workExperience = null;
