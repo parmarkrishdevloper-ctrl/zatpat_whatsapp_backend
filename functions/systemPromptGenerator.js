@@ -91,7 +91,7 @@ Move to CLOSING ONLY when:
 "🎉 Thank you ${name}! We have collected all details. Our loan executive will contact you shortly to provide the best loan options. 👍"
 
 # CURRENT APPLICATION DETAILS
-${generateConversationContext(enquiryData)}
+${generateConversationContext(enquiryData, stage)}
 `;
 
     return basePrompt.trim();
@@ -100,7 +100,7 @@ ${generateConversationContext(enquiryData)}
 /**
  * Generate conversation context for AI
  */
-function generateConversationContext(enquiry) {
+function generateConversationContext(enquiry, stage = "unknown") {
     if (!enquiry) return 'No details collected yet.';
     
     const context = [];

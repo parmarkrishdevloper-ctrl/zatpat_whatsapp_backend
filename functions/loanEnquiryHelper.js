@@ -37,6 +37,18 @@ function parseLoanAmount(amount) {
     return null;
 }
 
+function parseCibilScore(score) {
+    if (score === null || score === undefined) return null;
+    if (typeof score === 'number') return score;
+    if (typeof score === 'string') {
+        const cleaned = score.trim();
+        const num = parseInt(cleaned);
+        if (!isNaN(num)) return num;
+        return null; // Return null for "Nil", "Good", etc. to avoid Mongoose cast error
+    }
+    return null;
+}
+
 function validateName(value) {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -67,7 +79,14 @@ function applyParsedData(enquiry, data = {}) {
     if (data.loanType) enquiry.loanType = validateData(data.loanType);
     if (data.intent) enquiry.intent = data.intent;
     if (data.loanAmount && !enquiry.loanAmount) enquiry.loanAmount = parseLoanAmount(data.loanAmount);
-    if (data.cibilScore) enquiry.cibilScore = data.cibilScore;
+    if (data.cibilScore) {
+        const parsedCibil = parseCibilScore(data.cibilScore);
+        enquiry.cibilScore = parsedCibil;
+        // If it was a string like "Nil" or "Average", save it to details if details are empty
+        if (parsedCibil === null && typeof data.cibilScore === 'string' && !enquiry.cibilIssueDetail) {
+            enquiry.cibilIssueDetail = data.cibilScore;
+        }
+    }
     if (data.cibilIssueDetail) enquiry.cibilIssueDetail = validateData(data.cibilIssueDetail);
     if (data.profession) enquiry.profession = validateData(data.profession);
 
