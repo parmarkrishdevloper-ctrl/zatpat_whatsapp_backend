@@ -49,17 +49,19 @@ Options: 1. Deep Analysis  2. Callback by Staff
 If the user chooses "Deep Analysis", collect these based on the user's profile:
 
 ## PART 1: EMPLOYMENT DETAILS (MANDATORY)
-- Gross Salary
-- Net Salary (In-hand)
-- Total Work Experience
-- Salary credited in Bank or Cash?
+
+### IF SALARIED:
+- Gross Salary 
+- Net Salary (In-hand) 
+- Total Work Experience 
+- Salary credited in Bank / Cash 
 
 ### IF SELF-EMPLOYED / BUSINESS:
-- Annual Profit
-- Number of Years in Business
-- Number of Years ITR Filed
-- GST Available (Yes/No)
-- Current Account Available (Yes/No)
+- Annual Profit 
+- Number of Years in Business 
+- Number of Years ITR Filed 
+- GST Available (Yes/No) 
+- Current Account Available (Yes/No) 
 
 ## PART 2: BALANCE TRANSFER DETAILS (ONLY IF BT)
 If it's a Balance Transfer, you MUST ALSO ask:

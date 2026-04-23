@@ -184,7 +184,7 @@ function hasAllPrimaryFields(enquiry) {
         if (enquiry.profession === 'Salaried') {
             if (!enquiry.grossSalary || !enquiry.salaryMode || !enquiry.totalYearsInJob) return false;
         } else if (enquiry.profession?.toLowerCase().includes('business') || enquiry.profession?.toLowerCase().includes('self')) {
-            if (!enquiry.annualProfit || !enquiry.businessVintageYears || !enquiry.itrYears) return false;
+            if (!enquiry.annualProfit || !enquiry.businessVintageYears || !enquiry.itrYears || enquiry.hasGstNumber === null || enquiry.hasCurrentAccount === null) return false;
         }
 
         // Balance Transfer Specific
@@ -228,6 +228,8 @@ function getMissingPrimaryFields(enquiry) {
             if (!enquiry.annualProfit) missing.push('annualProfit');
             if (!enquiry.businessVintageYears) missing.push('businessVintageYears');
             if (!enquiry.itrYears) missing.push('itrYears');
+            if (enquiry.hasGstNumber === null) missing.push('hasGstNumber');
+            if (enquiry.hasCurrentAccount === null) missing.push('hasCurrentAccount');
         }
 
         if (enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer) {
