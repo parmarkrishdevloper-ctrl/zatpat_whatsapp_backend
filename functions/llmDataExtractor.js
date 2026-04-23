@@ -66,6 +66,7 @@ BASIC:
 - loanType
 - loanAmount
 - loanPurpose
+- analysisPreference → (deep_analysis, callback, null)
 
 PERSONAL:
 - clientName (ONLY actual name, no titles like "Mr.", "I am")
@@ -171,8 +172,9 @@ SECURITY:
 - Output must ALWAYS be valid JSON.
 - CRITICAL: The "intent" field should ONLY be included if the user explicitly expresses a wish to start a new loan, transfer, or cancel in the CURRENT message. Do NOT include "intent" if the user is just confirming details (e.g., saying "yes", "correct", "ok").
 - CRITICAL: Never extract common keywords like "loan", "new", "apply", "transfer", "bank", "rupees", city names (e.g., "Ahemdabad", "Surat"), or employment types (e.g., "Salaried", "Business") as a clientName.
-- If the user says "My name is X", extract "X". If they say "New loan", clientName should remain empty.
 - Normalize clientName: "I am Krish" -> "Krish".
+- If the user says "My name is X", extract "X". If they say "New loan", clientName should remain empty.
+- Normalize analysisPreference: "call me", "staff", "executive" -> "callback". "deep", "analysis", "check eligibility" -> "deep_analysis".
 - If the user says "I don't know" or "not sure" for CIBIL score, set cibilScore: null (literal JSON null).
 `;
 

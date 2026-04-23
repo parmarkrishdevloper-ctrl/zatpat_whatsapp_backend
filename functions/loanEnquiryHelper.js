@@ -140,6 +140,7 @@ function applyParsedData(enquiry, data = {}) {
     if (data.email) enquiry.email = validateData(data.email);
     if (data.preferredCallbackTime) enquiry.preferredCallbackTime = validateData(data.preferredCallbackTime);
     if (data.existingLoanDetails) enquiry.existingLoanDetails = validateData(data.existingLoanDetails);
+    if (data.analysisPreference) enquiry.analysisPreference = validateData(data.analysisPreference);
 }
 
 function hasAnyCoreLoanData(enquiry) {
@@ -153,29 +154,44 @@ function hasAnyCoreLoanData(enquiry) {
 }
 
 function hasAllPrimaryFields(enquiry) {
-    // 1. Core Minimum 5 Fields
-    const hasCore5 = Boolean(
+    // 1. Core Basic Info (Phase 1)
+    const hasCoreBasic = Boolean(
+        enquiry.clientName &&
         enquiry.loanType &&
         enquiry.loanAmount &&
-        (enquiry.netSalary || enquiry.monthlyAnnualIncome || enquiry.businessTurnover) &&
+        enquiry.city &&
         enquiry.profession &&
-        enquiry.city
+        (enquiry.netSalary || enquiry.monthlyAnnualIncome || enquiry.businessTurnover) &&
+        enquiry.existingEmiAmount !== null &&
+        enquiry.cibilScore !== null
     );
 
-    if (!hasCore5) return false;
+    if (!hasCoreBasic) return false;
 
-    // 2. Conditional Smart Questions
-
-    // If Mortgage Loan / LAP -> Need Property Value and Property Type
+    // 2. Conditional Basic Info
     const isMortgageOrLap = enquiry.loanType?.toLowerCase().includes('mortgage') || enquiry.loanType?.toLowerCase().includes('property') || enquiry.loanType?.toLowerCase().includes('lap');
     if (isMortgageOrLap && (!enquiry.propertyValue || !enquiry.propertyType)) return false;
 
-    // If Business Loan -> Need Business Turnover
-    const isBusinessLoan = enquiry.loanType?.toLowerCase().includes('business');
-    if (isBusinessLoan && !enquiry.businessTurnover) return false;
+    // 3. The Choice (Phase 2)
+    if (!enquiry.analysisPreference) return false;
 
-    // If High loan amount (> ₹10L) -> Need CIBIL score
-    if (enquiry.loanAmount > 1000000 && !enquiry.cibilScore) return false;
+    // If user chose direct callback, we are done
+    if (enquiry.analysisPreference === 'callback') return true;
+
+    // 4. Deep Analysis (Phase 3)
+    if (enquiry.analysisPreference === 'deep_analysis') {
+        // Employment Specific
+        if (enquiry.profession === 'Salaried') {
+            if (!enquiry.grossSalary || !enquiry.salaryMode || !enquiry.totalYearsInJob) return false;
+        } else if (enquiry.profession?.toLowerCase().includes('business') || enquiry.profession?.toLowerCase().includes('self')) {
+            if (!enquiry.annualProfit || !enquiry.businessVintageYears || !enquiry.itrYears) return false;
+        }
+
+        // Balance Transfer Specific
+        if (enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer) {
+            if (!enquiry.currentBank || !enquiry.currentInterestRate || !enquiry.loanStartDate || !enquiry.outstandingAmount || !enquiry.currentEmi) return false;
+        }
+    }
 
     return true;
 }
@@ -183,23 +199,43 @@ function hasAllPrimaryFields(enquiry) {
 function getMissingPrimaryFields(enquiry) {
     const missing = [];
 
-    // Core 5
+    // Core Basic
+    if (!enquiry.clientName) missing.push('clientName');
     if (!enquiry.loanType) missing.push('loanType');
     if (!enquiry.loanAmount) missing.push('loanAmount');
-    if (!enquiry.netSalary && !enquiry.monthlyAnnualIncome && !enquiry.businessTurnover) missing.push('income');
-    if (!enquiry.profession) missing.push('profession');
     if (!enquiry.city) missing.push('city');
+    if (!enquiry.profession) missing.push('profession');
+    if (!enquiry.netSalary && !enquiry.monthlyAnnualIncome && !enquiry.businessTurnover) missing.push('income');
+    if (enquiry.existingEmiAmount === null) missing.push('existingEmiAmount');
+    if (enquiry.cibilScore === null) missing.push('cibilScore');
 
-    // Conditional
-    if ((enquiry.loanType?.toLowerCase().includes('mortgage') || enquiry.loanType?.toLowerCase().includes('property') || enquiry.loanType?.toLowerCase().includes('lap')) && (!enquiry.propertyValue || !enquiry.propertyType)) {
+    // Conditional Basic
+    if (enquiry.loanType?.toLowerCase().includes('mortgage') || enquiry.loanType?.toLowerCase().includes('property') || enquiry.loanType?.toLowerCase().includes('lap')) {
         if (!enquiry.propertyValue) missing.push('propertyValue');
         if (!enquiry.propertyType) missing.push('propertyType');
     }
-    if (enquiry.loanType?.toLowerCase().includes('business') && !enquiry.businessTurnover) {
-        missing.push('businessTurnover');
-    }
-    if (enquiry.loanAmount > 1000000 && !enquiry.cibilScore) {
-        missing.push('cibilScore');
+
+    // Choice
+    if (enquiry.analysisPreference === null) {
+        missing.push('analysisPreference');
+    } else if (enquiry.analysisPreference === 'deep_analysis') {
+        // Deep Analysis Missing Fields
+        if (enquiry.profession === 'Salaried') {
+            if (!enquiry.grossSalary) missing.push('grossSalary');
+            if (!enquiry.salaryMode) missing.push('salaryMode');
+            if (!enquiry.totalYearsInJob) missing.push('totalYearsInJob');
+        } else if (enquiry.profession?.toLowerCase().includes('business') || enquiry.profession?.toLowerCase().includes('self')) {
+            if (!enquiry.annualProfit) missing.push('annualProfit');
+            if (!enquiry.businessVintageYears) missing.push('businessVintageYears');
+            if (!enquiry.itrYears) missing.push('itrYears');
+        }
+
+        if (enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer) {
+            if (!enquiry.currentBank) missing.push('currentBank');
+            if (!enquiry.currentInterestRate) missing.push('currentInterestRate');
+            if (!enquiry.loanStartDate) missing.push('loanStartDate');
+            if (!enquiry.outstandingAmount) missing.push('outstandingAmount');
+        }
     }
 
     return missing;

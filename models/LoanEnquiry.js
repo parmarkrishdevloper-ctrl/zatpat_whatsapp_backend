@@ -103,6 +103,7 @@ const loanEnquirySchema = new mongoose.Schema({
     tags: [{ type: String }],
 
     // Conversation management
+    analysisPreference: { type: String, enum: ['callback', 'deep_analysis', null], default: null },
     conversationStage: { type: String, default: 'greeting' },
     callbackRequested: { type: Boolean, default: false },
     preferredCallbackTime: { type: String, default: null },
