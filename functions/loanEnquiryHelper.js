@@ -201,14 +201,15 @@ function hasAllPrimaryFields(enquiry) {
     if (enquiry.analysisPreference === 'deep_analysis') {
         // Employment Specific
         if (enquiry.profession === 'Salaried') {
-            if (!enquiry.netSalary || !enquiry.totalYearsInJob || !enquiry.companyName) return false;
+            if (!enquiry.netSalary || !enquiry.totalYearsInJob || !enquiry.companyName || !enquiry.salaryMode) return false;
         } else if (enquiry.profession?.toLowerCase().includes('business') || enquiry.profession?.toLowerCase().includes('self')) {
             if (!enquiry.annualProfit || !enquiry.businessVintageYears || !enquiry.itrYears || enquiry.hasGstNumber === null || enquiry.hasCurrentAccount === null) return false;
         }
 
         // Balance Transfer Specific
         if (enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer) {
-            if (!enquiry.currentBank || !enquiry.currentInterestRate || !enquiry.loanStartDate || !enquiry.outstandingAmount || !enquiry.currentEmi) return false;
+            if (!enquiry.currentBank || !enquiry.currentInterestRate || !enquiry.loanStartDate || !enquiry.outstandingAmount || !enquiry.currentEmi || enquiry.missedEmiLast12Months === null || !enquiry.balanceTransferGoal || enquiry.topUpRequired === null) return false;
+            if (enquiry.topUpRequired && !enquiry.topUpAmount) return false;
         }
     }
 
@@ -243,6 +244,7 @@ function getMissingPrimaryFields(enquiry) {
             if (!enquiry.netSalary) missing.push('netSalary');
             if (!enquiry.totalYearsInJob) missing.push('totalYearsInJob');
             if (!enquiry.companyName) missing.push('companyName');
+            if (!enquiry.salaryMode) missing.push('salaryMode');
         } else if (enquiry.profession?.toLowerCase().includes('business') || enquiry.profession?.toLowerCase().includes('self')) {
             if (!enquiry.annualProfit) missing.push('annualProfit');
             if (!enquiry.businessVintageYears) missing.push('businessVintageYears');
@@ -256,6 +258,11 @@ function getMissingPrimaryFields(enquiry) {
             if (!enquiry.currentInterestRate) missing.push('currentInterestRate');
             if (!enquiry.loanStartDate) missing.push('loanStartDate');
             if (!enquiry.outstandingAmount) missing.push('outstandingAmount');
+            if (!enquiry.currentEmi) missing.push('currentEmi');
+            if (enquiry.missedEmiLast12Months === null) missing.push('missedEmiLast12Months');
+            if (!enquiry.balanceTransferGoal) missing.push('balanceTransferGoal');
+            if (enquiry.topUpRequired === null) missing.push('topUpRequired');
+            if (enquiry.topUpRequired && !enquiry.topUpAmount) missing.push('topUpAmount');
         }
     }
 

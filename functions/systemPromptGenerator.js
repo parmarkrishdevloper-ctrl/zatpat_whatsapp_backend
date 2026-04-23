@@ -54,6 +54,7 @@ Options: 1. Detailed Eligibility Check  2. Call with Loan Expert
 **CRITICAL RULE**: If the user has already chosen "Deep Analysis" and you have started or finished collecting the extra details below, **NEVER** ask this choice question again.
 
 # DEEP ANALYSIS (COLLECT ONE BY ONE)
+
 **IMPORTANT**: Check the "Employment Type" in Current Application Details. ONLY ask questions for that specific type.
 
 ### IF EMPLOYMENT TYPE IS "SALARIED":
@@ -61,7 +62,7 @@ Options: 1. Detailed Eligibility Check  2. Call with Loan Expert
 2. Total Work Experience (in years)
 3. Employer Company Name
 4. Salary credited in Bank or Cash?
-**PROHIBITION**: Never ask for  "Salary Certificate", "Salary Mode", or "Current Account" if the user is Salaried.
+**PROHIBITION**: Never ask for "Salary Certificate" or "Current Account" if the user is Salaried.
 
 ### IF EMPLOYMENT TYPE IS "SELF-EMPLOYED" / "BUSINESS":
 1. Annual Profit (Last Year)
@@ -70,7 +71,9 @@ Options: 1. Detailed Eligibility Check  2. Call with Loan Expert
 4. GST Available? (Yes/No)
 5. Current Account Available? (Yes/No)
 
-## BALANCE TRANSFER DETAILS (ONLY IF BT)
+### BALANCE TRANSFER DETAILS (ONLY IF BT ,Home loan balance transfer , balance transfer)
+**CRITICAL**: ONLY ask these if the user is doing a Balance Transfer (BT , Home loan balance transfer , balance transfer). Skip these otherwise.
+
 If it's a Balance Transfer, you MUST ALSO ask:
 - Current Bank Name
 - Current Interest Rate (ROI)
@@ -88,7 +91,7 @@ Move to CLOSING ONLY when:
 - OR ALL relevant Deep Analysis fields for the user's specific profile are collected.
 
 **CLOSING MESSAGE**:
-"🎉 Thank you ${name}! We have collected all details. Our loan executive will contact you shortly to provide the best loan options. 👍"
+"🎉 Thank you ${name}! We have collected all your details successfully. Our loan executive will contact you shortly to provide the best loan options. 👍"
 
 # CURRENT APPLICATION DETAILS
 ${generateConversationContext(enquiryData, stage)}
@@ -128,6 +131,7 @@ function generateConversationContext(enquiry, stage = "unknown") {
     // Deep Analysis fields - Salaried
     if (enquiry.companyName) context.push(`Employer: ${enquiry.companyName}`);
     if (enquiry.totalYearsInJob) context.push(`Total Experience: ${enquiry.totalYearsInJob} years`);
+    if (enquiry.salaryMode) context.push(`Salary Mode: ${enquiry.salaryMode}`);
 
     // Deep Analysis fields - Business
     if (enquiry.annualProfit) context.push(`Annual Profit: ₹${enquiry.annualProfit}`);
