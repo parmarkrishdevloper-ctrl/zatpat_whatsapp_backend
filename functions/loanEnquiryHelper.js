@@ -197,6 +197,9 @@ function hasAllPrimaryFields(enquiry) {
     if (isMortgageOrLap && (!enquiry.propertyValue || !enquiry.propertyType)) return false;
 
     // 3. The Choice (Phase 2)
+    const isPersonalOrBusiness = loanTypeLower.includes('personal') || loanTypeLower.includes('business');
+    if (isPersonalOrBusiness) return true; // Skip Phase 2 & 3 for these types
+
     if (!enquiry.analysisPreference) return false;
 
     // If user chose direct callback, we are done
@@ -246,6 +249,10 @@ function getMissingPrimaryFields(enquiry) {
     }
 
     // Choice
+    const loanTypeLower_Check = enquiry.loanType?.toLowerCase() || "";
+    const isPersonalOrBusiness = loanTypeLower_Check.includes('personal') || loanTypeLower_Check.includes('business');
+    if (isPersonalOrBusiness) return missing; // No more missing fields for these types
+
     if (enquiry.analysisPreference === null) {
         missing.push('analysisPreference');
     } else if (enquiry.analysisPreference === 'deep_analysis') {
