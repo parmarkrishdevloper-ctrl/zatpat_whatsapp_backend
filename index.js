@@ -114,21 +114,7 @@ app.post("/webhook", async (req, res) => {
 
     // 1. Handle explicit reset (User said "New Loan")
     if (upsertResult.isReset) {
-      let resetMsg = "Okay, I've started a new loan application for you. What type of loan are you looking for?";
-
-      // If it was a SMART reset (we already captured new data like "Personal loan"), customize the message
-      if (upsertResult.isSmartReset && enquiry.loanType) {
-        const loanTypeDisplay = enquiry.loanType.toLowerCase().includes('loan') ? enquiry.loanType : `${enquiry.loanType} loan`;
-        resetMsg = `Great! I've noted you're applying for a ${loanTypeDisplay}. How much loan amount are you looking for?`;
-      }
-
-      await sendWhatsAppMessage(from, resetMsg, WHATSAPP_TOKEN, PHONE_NUMBER_ID);
-      // Save conversation state for this message
-      try {
-        await saveContact(from);
-        await saveConversation(from, userText, resetMsg, estimateTokens(userText), estimateTokens(resetMsg));
-      } catch (dbError) { console.error(dbError); }
-      return;
+      console.log(`🔄 [RESET] Enquiry reset for ${from}. Continuing to AI flow.`);
     }
 
     // 2. Handle Greeting - AUTO RESET for new loan flow
