@@ -166,9 +166,9 @@ function hasAllPrimaryFields(enquiry) {
 
     // 2. Conditional Smart Questions
 
-    // If Home Loan -> Need Property Value
-    const isHomeLoan = enquiry.loanType?.toLowerCase().includes('home');
-    if (isHomeLoan && !enquiry.propertyValue) return false;
+    // If Mortgage Loan / LAP -> Need Property Value and Property Type
+    const isMortgageOrLap = enquiry.loanType?.toLowerCase().includes('mortgage') || enquiry.loanType?.toLowerCase().includes('property') || enquiry.loanType?.toLowerCase().includes('lap');
+    if (isMortgageOrLap && (!enquiry.propertyValue || !enquiry.propertyType)) return false;
 
     // If Business Loan -> Need Business Turnover
     const isBusinessLoan = enquiry.loanType?.toLowerCase().includes('business');
@@ -191,8 +191,9 @@ function getMissingPrimaryFields(enquiry) {
     if (!enquiry.city) missing.push('city');
 
     // Conditional
-    if (enquiry.loanType?.toLowerCase().includes('home') && !enquiry.propertyValue) {
-        missing.push('propertyValue');
+    if ((enquiry.loanType?.toLowerCase().includes('mortgage') || enquiry.loanType?.toLowerCase().includes('property') || enquiry.loanType?.toLowerCase().includes('lap')) && (!enquiry.propertyValue || !enquiry.propertyType)) {
+        if (!enquiry.propertyValue) missing.push('propertyValue');
+        if (!enquiry.propertyType) missing.push('propertyType');
     }
     if (enquiry.loanType?.toLowerCase().includes('business') && !enquiry.businessTurnover) {
         missing.push('businessTurnover');

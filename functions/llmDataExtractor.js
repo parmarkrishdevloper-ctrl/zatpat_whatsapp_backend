@@ -118,7 +118,7 @@ BALANCE TRANSFER:
 
 PROPERTY:
 - propertyFinalized → true/false
-- propertyType → (Under construction, Ready possession, Resale)
+- propertyType → (Residential, Commercial, Plot, Under construction, Ready possession, Resale)
 - propertyValue
 - saleDeedAmount
 - propertyNature → (residential, commercial, industrial, plot)
