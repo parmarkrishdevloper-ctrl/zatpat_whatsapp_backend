@@ -57,11 +57,11 @@ Options: 1. Detailed Eligibility Check  2. Call with Loan Expert
 **IMPORTANT**: Check the "Employment Type" in Current Application Details. ONLY ask questions for that specific type.
 
 ### IF EMPLOYMENT TYPE IS "SALARIED":
-1. Gross Salary (Annual)
-2. Net Salary (Monthly In-hand)
-3. Total Work Experience (in years)
+1. Gross Salary (Monthly In-hand)
+2. Total Work Experience (in years)
+3. Employer Company Name
 4. Salary credited in Bank or Cash?
-**PROHIBITION**: Never ask for "Salary Certificate" or "Annual Profit" if the user is Salaried.
+**PROHIBITION**: Never ask for  "Salary Certificate", "Salary Mode", or "Current Account" if the user is Salaried.
 
 ### IF EMPLOYMENT TYPE IS "SELF-EMPLOYED" / "BUSINESS":
 1. Annual Profit (Last Year)
@@ -126,8 +126,7 @@ function generateConversationContext(enquiry, stage = "unknown") {
     }
 
     // Deep Analysis fields - Salaried
-    if (enquiry.grossSalary) context.push(`Gross Salary: ₹${enquiry.grossSalary}`);
-    if (enquiry.salaryMode) context.push(`Salary Mode: ${enquiry.salaryMode}`);
+    if (enquiry.companyName) context.push(`Employer: ${enquiry.companyName}`);
     if (enquiry.totalYearsInJob) context.push(`Total Experience: ${enquiry.totalYearsInJob} years`);
 
     // Deep Analysis fields - Business

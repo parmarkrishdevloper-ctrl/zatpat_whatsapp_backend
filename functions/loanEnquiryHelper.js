@@ -201,7 +201,7 @@ function hasAllPrimaryFields(enquiry) {
     if (enquiry.analysisPreference === 'deep_analysis') {
         // Employment Specific
         if (enquiry.profession === 'Salaried') {
-            if (!enquiry.grossSalary || !enquiry.salaryMode || !enquiry.totalYearsInJob) return false;
+            if (!enquiry.netSalary || !enquiry.totalYearsInJob || !enquiry.companyName) return false;
         } else if (enquiry.profession?.toLowerCase().includes('business') || enquiry.profession?.toLowerCase().includes('self')) {
             if (!enquiry.annualProfit || !enquiry.businessVintageYears || !enquiry.itrYears || enquiry.hasGstNumber === null || enquiry.hasCurrentAccount === null) return false;
         }
@@ -240,9 +240,9 @@ function getMissingPrimaryFields(enquiry) {
     } else if (enquiry.analysisPreference === 'deep_analysis') {
         // Deep Analysis Missing Fields
         if (enquiry.profession === 'Salaried') {
-            if (!enquiry.grossSalary) missing.push('grossSalary');
-            if (!enquiry.salaryMode) missing.push('salaryMode');
+            if (!enquiry.netSalary) missing.push('netSalary');
             if (!enquiry.totalYearsInJob) missing.push('totalYearsInJob');
+            if (!enquiry.companyName) missing.push('companyName');
         } else if (enquiry.profession?.toLowerCase().includes('business') || enquiry.profession?.toLowerCase().includes('self')) {
             if (!enquiry.annualProfit) missing.push('annualProfit');
             if (!enquiry.businessVintageYears) missing.push('businessVintageYears');
