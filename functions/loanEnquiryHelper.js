@@ -236,7 +236,11 @@ function getMissingPrimaryFields(enquiry) {
     if (enquiry.cibilScore === null) missing.push('cibilScore');
 
     // Conditional Basic
-    if (enquiry.loanType?.toLowerCase().includes('mortgage') || enquiry.loanType?.toLowerCase().includes('property') || enquiry.loanType?.toLowerCase().includes('lap')) {
+    const loanTypeLower = enquiry.loanType?.toLowerCase() || "";
+    const isBT_Basic = enquiry.intent === 'balance_transfer' || enquiry.isBalanceTransfer || loanTypeLower.includes('transfer') || loanTypeLower.includes('bt');
+    const isMortgageOrLap_Basic = (loanTypeLower.includes('mortgage') || loanTypeLower.includes('property') || loanTypeLower.includes('lap')) && !loanTypeLower.includes('home') && !isBT_Basic;
+
+    if (isMortgageOrLap_Basic) {
         if (!enquiry.propertyValue) missing.push('propertyValue');
         if (!enquiry.propertyType) missing.push('propertyType');
     }
