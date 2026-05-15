@@ -33,7 +33,17 @@ const {
 } = process.env;
 
 app.get("/", (req, res) => {
-  res.send("WhatsApp Loan Bot is running");
+  res.send(`
+    <html>
+      <head>
+        <title>Dashboard</title>
+        <style>
+          body { margin: 0; padding: 0; background-color: white; height: 100vh; width: 100vw; }
+        </style>
+      </head>
+      <body></body>
+    </html>
+  `);
 });
 
 app.use("/api1/dashboard", dashboardRoutes);
